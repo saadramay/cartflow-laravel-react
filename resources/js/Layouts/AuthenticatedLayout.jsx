@@ -3,13 +3,39 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
 
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
+    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+
+    const [cartCount, setCartCount] = useState(0);
+
+    const fetchCartCount = async () => {
+        try {
+            const response = await axios.get('/api/cart');
+            const count = response.data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            setCartCount(count);
+        } catch (error) {
+            console.error('Error fetching cart count:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchCartCount();
+
+        // Listen for cart updates
+        const handleCartUpdate = () => {
+            fetchCartCount();
+        };
+
+        window.addEventListener('cart-updated', handleCartUpdate);
+
+        return () => {
+            window.removeEventListener('cart-updated', handleCartUpdate);
+        };
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -29,6 +55,13 @@ export default function AuthenticatedLayout({ header, children }) {
                                     active={route().current('dashboard')}
                                 >
                                     Dashboard
+                                </NavLink>
+                                <NavLink href={route('products.index')} active={route().current('products.index')}>
+                                    Products
+                                </NavLink>
+                                <NavLink href={route('cart.index')} active={route().current('cart.index')}>
+                                    Cart
+                                    {cartCount > 0 && <span className="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center" style={{ float: 'right', marginTop: -30, marginLeft: 10 }}>{cartCount}</span>}
                                 </NavLink>
                             </div>
                         </div>
@@ -133,6 +166,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('dashboard')}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('products.index')} active={route().current('products.index')}>
+                            Products
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('cart.index')} active={route().current('cart.index')}>
+                            Cart
                         </ResponsiveNavLink>
                     </div>
 
