@@ -54,7 +54,7 @@ A simple yet feature-rich e-commerce shopping cart system built with Laravel and
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/cartflow-laravel-react.git
+git clone https://github.com/saadramay/cartflow-laravel-react.git
 cd cartflow-laravel-react
 ```
 
@@ -262,10 +262,10 @@ cartflow-laravel-react/
 ## 🔧 Configuration
 
 ### Change Scheduler Time
-Edit `app/Console/Kernel.php`:
+Edit `routes/console.php`:
 ```php
-$schedule->job(new SendDailySalesReport())
-         ->dailyAt('20:00'); // Change time here
+Schedule::job(new SendDailySalesReport())
+    ->dailyAt('20:00'); // Change time here
 ```
 
 ### Change Low Stock Threshold
@@ -347,7 +347,7 @@ Open source - MIT License
 
 **Saad Arshad**
 - Email: srawmay@gmail.com
-- GitHub: [@saad-arshad](https://github.com/YOUR_USERNAME)
+- GitHub: [@saad-arshad](https://github.com/saadramay)
 - LinkedIn: [Saad Arshad](https://linkedin.com/in/YOUR_PROFILE)
 
 ---
