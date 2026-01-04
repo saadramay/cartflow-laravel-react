@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\LowStockAlert;
+use Illuminate\Support\Facades\Cache;
 
 class SendLowStockNotification implements ShouldQueue
 {
@@ -25,6 +26,13 @@ class SendLowStockNotification implements ShouldQueue
 
     public function handle(): void
     {
+        // Prevent duplicate notifications within 1 hour
+        $cacheKey = 'low_stock_notified_' . $this->product->id;
+
+        if (Cache::has($cacheKey)) {
+            return;
+        }
+
         // Get admin user
         $admin = User::where('email', 'admin@cartflow.com')->first();
 

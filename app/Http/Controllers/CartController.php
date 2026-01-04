@@ -90,11 +90,6 @@ class CartController extends Controller
             ]);
         }
 
-        // Check if stock is low and trigger notification
-        if ($product->isLowStock()) {
-            SendLowStockNotification::dispatch($product);
-        }
-
         return response()->json([
             'message' => 'Product added to cart',
             'cartItem' => $cartItem->load('product')
@@ -123,11 +118,6 @@ class CartController extends Controller
         }
 
         $cartItem->update(['quantity' => $request->quantity]);
-
-        // Check if stock is low
-        if ($product->isLowStock()) {
-            SendLowStockNotification::dispatch($product);
-        }
 
         return response()->json([
             'message' => 'Cart updated',

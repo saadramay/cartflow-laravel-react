@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendLowStockNotification;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -59,6 +60,10 @@ class CheckoutController extends Controller
 
                 // Reduce stock
                 $product->decrement('stock_quantity', $cartItem->quantity);
+                $product->refresh();
+                if ($product->isLowStock()) {
+                    SendLowStockNotification::dispatch($product);
+                }
             }
 
             // Clear cart
@@ -70,10 +75,9 @@ class CheckoutController extends Controller
                 'message' => 'Order placed successfully',
                 'order' => $order->load('orderItems.product')
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'message' => 'Checkout failed: ' . $e->getMessage()
             ], 500);
